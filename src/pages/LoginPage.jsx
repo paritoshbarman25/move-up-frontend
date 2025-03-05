@@ -17,6 +17,7 @@ export const LoginPage = () => {
         if(localStorage.getItem("email") && localStorage.getItem("password")){
             emailRef.current.value = localStorage.getItem("email");
             passwordRef.current.value = localStorage.getItem("password");
+            setCredentials({...credentials, email:localStorage.getItem("email"), password:localStorage.getItem("password")})
         }
     },[])
 
@@ -24,6 +25,7 @@ export const LoginPage = () => {
         e.preventDefault();
         let credentialsObj = credentials
         credentialsObj.username = credentials.email
+        console.log(credentialsObj);
 
 
         

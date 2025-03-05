@@ -5,6 +5,7 @@ import axios from "axios";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  // const [user, setUser] = useState(null);
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loginStatus, setloginStatus] = useState(false);
@@ -13,9 +14,9 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", credentials);
-      setToken(response.data.token);
-      localStorage.setItem("token", response.data.token);
+      const response = await axios.post("http://127.0.0.1:3005/auth/login", credentials);
+      setToken(response.data.AccessToken);
+      localStorage.setItem("token", response.data.AccessToken);
       setloginStatus(true);
       navigate("/profile");
       // console.log("redirect to the profile page")
@@ -27,7 +28,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (details) => {
     try {
-      await axios.post("http://localhost:5000/api/auth/register", details);
+      await axios.post("http://127.0.0.1:3005/auth/register", details);
       navigate("/login");
       // console.log("redirect to the login page")
 
@@ -39,12 +40,13 @@ export const AuthProvider = ({ children }) => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/auth/profile", {
+      const response = await axios.get("http://127.0.0.1:3005/auth/profile", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       setUser(response.data.user);
+      console.log(response.data.user)
     } catch (error) {
       console.error("Failed to fetch profile", error);
     }
