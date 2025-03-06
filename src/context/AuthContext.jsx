@@ -9,6 +9,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loginStatus, setloginStatus] = useState(false);
+  const [orderIDs, setorderIDs] = useState([]);
+  const [nearestTrucks, setnearestTrucks] = useState([]);
   // const [token, setToken] = useState("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWF0IjoxNzMyOTQ4NzgzLCJleHAiOjE3MzI5NTIzODN9.veNgpb4svES4usBanVQ181srcv8YLasIs5qW8vgdf6I");
   const navigate = useNavigate();
 
@@ -52,6 +54,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const findNearestTrucks = async (longitude, latitude, maxDistance = 5000) => {
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:3005/truck/find-truck",
+        { longitude, latitude, maxDistance },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data.data);
+      setnearestTrucks(response.data.data)
+      return response.data.data; // Returns the list of nearest trucks
+    } catch (error) {
+      console.error("Failed to find nearest trucks", error);
+      setnearestTrucks();
+      return null;
+    }
+  };
+
+  
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -63,7 +89,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, fetchProfile, logout, loginStatus }}>
+    <AuthContext.Provider value={{ user, token, login, register, fetchProfile, logout, loginStatus, orderIDs, setorderIDs, findNearestTrucks, nearestTrucks ,setnearestTrucks}}>
       {children}
     </AuthContext.Provider>
   );

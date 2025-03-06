@@ -1,9 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import Socketcomponent from "./Socketcomponent";
 
 const OrderForm = () => {
-    const { user, token } = useAuth();
+    const { user, token, setorderIDs, orderIDs } = useAuth();
+
+    const [currentorderIDs, setcurrentorderIDs] = useState();
+    const [currentorderLocation, setcurrentorderLocation] = useState();
+    const [timeIntervalId, settimeIntervalId] = useState();
+
+    // useEffect(()=>{
+    //     console.log("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+    // }, [currentorderIDs]);
+
+
+    if(currentorderIDs){
+        const timeIddd = setInterval(() => {
+            console.log("Rendering the Socket components");
+            return (
+                <div>
+                    {message}
+                    <Socketcomponent orderId={currentorderIDs} currentorderLocation={currentorderLocation}/>
+                </div>
+            )
+        }, 5000);
+    }
+    
+
     console.log(user._id)
     console.log("Calling")
     const [orderData, setOrderData] = useState({
@@ -64,6 +88,11 @@ const OrderForm = () => {
                 },
             });
 
+            setorderIDs([...orderIDs, response.data.order_id]);
+            setcurrentorderIDs(response.data.order_id);
+            setcurrentorderLocation(response.data.order_location);
+            // need to call the room function
+
             setMessage("Order Created Successfully!");
             console.log("Order Response:", response.data);
         } catch (error) {
@@ -73,6 +102,15 @@ const OrderForm = () => {
             setLoading(false);
         }
     };
+
+    if(currentorderIDs){
+        return (
+            <div>
+                {message}
+                <Socketcomponent orderId={currentorderIDs} currentorderLocation={currentorderLocation}/>
+            </div>
+        )
+    }
 
     return (
         <div>
@@ -116,6 +154,7 @@ const OrderForm = () => {
                 <button type="submit" disabled={loading}>{loading ? "Booking..." : "Create Order"}</button>
             </form>
             {message && <p>{message}</p>}
+            {orderIDs.join(", ")}
         </div>
     );
 };
